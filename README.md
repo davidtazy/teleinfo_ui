@@ -4,6 +4,10 @@ display grid information in real time
 
 data fetched from influxdb
 
+![live power consumption](.screenshots/pinst.png)
+![day consumption](.screenshots/HP.png)
+![night consumption](.screenshots/HC.png)
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

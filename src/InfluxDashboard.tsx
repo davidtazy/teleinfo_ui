@@ -6,22 +6,6 @@ import { useState } from "react";
 import NavBar from "./NavBar";
 
 const bucket = "teleinfo";
-let periodic_query = `import "timezone"
-option location = timezone.location(name: "Europe/Paris")
-from(bucket: "${bucket}")
-    |> range(start: -1h)
-    |> filter(fn: (r) => r["_field"] == "value")
-    |> last()`;
-
-// HEURES CREUSE begins at 10pm to 6AM
-let first_query = `import "timezone"
-import "date"
-option location = timezone.location(name: "Europe/Paris")
-from(bucket: "${bucket}")
-    |> range(start: date.sub( d:2h, from:today() ) )
-    |> filter(fn: (r) => r["_measurement"] == "BBRHPJB" or r["_measurement"] == "BBRHCJB")
-    |> filter(fn: (r) => r["_field"] == "value")
-    |> first()`;
 
 type InfluxProps = {
   queryApi: QueryApi;
@@ -30,11 +14,13 @@ type InfluxProps = {
 export default function InfluxDashboard(props: InfluxProps) {
   const [auto_scroll, setAutoScroll] = useState(true);
 
-  // effect to request data from begin of the day
-  const [offset] = useInfluxQuery(props.queryApi, first_query, 60000);
+  const origin_query = getOriginQuery(new Date());
+
+  // effect to request data from begin of the session
+  const [zero] = useInfluxQuery(props.queryApi, origin_query, 60000);
 
   // effect to request current data periodically
-  const [values] = useInfluxQuery(props.queryApi, periodic_query, 2000);
+  const [values] = useInfluxQuery(props.queryApi, getPeriodicQuery(), 2000);
 
   let timestamp = " no data";
 
@@ -49,8 +35,49 @@ export default function InfluxDashboard(props: InfluxProps) {
         auto_scroll={auto_scroll}
         timestamp={timestamp}
       />
-      <Report values={values} offset={offset} auto_scroll={auto_scroll} />
-      <RawData values={values} offset={offset} />
+      <Report samples={values} zero={zero} auto_scroll={auto_scroll} />
+      <RawData values={values} offset={zero} />
     </>
   );
+}
+
+function getOriginQuery(now: Date): string {
+  // HEURES CREUSE begins at 10pm to 6AM
+  let first_query = `import "timezone"
+import "date"
+option location = timezone.location(name: "Europe/Paris")
+from(bucket: "${bucket}")
+    |> range(start: date.sub( d:2h, from:today() ) )
+    |> filter(fn: (r) => r["_measurement"] == "BBRHPJB" or r["_measurement"] == "BBRHCJB")
+    |> filter(fn: (r) => r["_field"] == "value")
+    |> first()`;
+
+  let evening_query = `import "timezone"
+    import "date"
+    option location = timezone.location(name: "Europe/Paris")
+    from(bucket: "${bucket}")
+    |> range(start: date.add( d:6h, to:today() ) )
+    |> filter(fn: (r) => r["_measurement"] == "BBRHPJB" or r["_measurement"] == "BBRHCJB")
+    |> filter(fn: (r) => r["_field"] == "value")
+    |> first()`;
+  if (now.getHours() >= 22) {
+    // in the evening (from  10pm to midnight)
+    // nightly counter is reset for the new night
+    // dayly counter is kept untill midnight
+    return evening_query;
+  } else {
+    // from midnight to 10pm
+    // nightly counter count from 10pm the previous day
+    // daily counter too
+    return first_query;
+  }
+}
+
+function getPeriodicQuery() {
+  return `import "timezone"
+  option location = timezone.location(name: "Europe/Paris")
+  from(bucket: "${bucket}")
+      |> range(start: -1h)
+      |> filter(fn: (r) => r["_field"] == "value")
+      |> last()`;
 }

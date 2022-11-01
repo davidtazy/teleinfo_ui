@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 rm -rf build
 npm run build

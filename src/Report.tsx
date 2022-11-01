@@ -4,10 +4,11 @@ import { Value } from "./UseInfluxQuery";
 import { BsFillLightningChargeFill, BsMoonStars, BsSun } from "react-icons/bs";
 import { Card, CardProps } from "./Card";
 import useChrono from "./UseChrono";
+import { Teleinfo } from "./Teleinfo";
 
 type ReportProps = {
-  values: Value[];
-  offset: Value[];
+  samples: Value[];
+  zero: Value[];
   auto_scroll: boolean;
 };
 
@@ -19,6 +20,7 @@ export default function Report(props: ReportProps) {
   const [chrono] = useChrono(5000);
   let card_id = 0;
   if (props.auto_scroll) {
+    //disable autoscroll
     card_id = chrono % cards.length;
   }
   // use effect to scroll to the target section when card_id change
@@ -39,26 +41,22 @@ export default function Report(props: ReportProps) {
 }
 
 function createCardsProps(props: ReportProps): CardProps[] {
-  const papp = getValue("PAPP", props.values);
+  const tt = new Teleinfo(props.samples, props.zero);
 
-  const hc = getIntValue("BBRHCJB", props.values);
-  const hc_offset = getIntValue("BBRHCJB", props.offset);
+  const papp = tt.getInstantPower();
 
-  const hp = getIntValue("BBRHPJB", props.values);
-  const hp_offset = getIntValue("BBRHPJB", props.offset);
-
-  const percent = Math.min(1, getIntValue("PAPP", props.values) / 3000);
+  const percent = Math.min(1, papp.watts / 3000);
   const papp_color = getColor(percent);
 
-  const hp_val = ((hp - hp_offset) / 1000.0).toFixed(1);
-  const hc_val = ((hc - hc_offset) / 1000.0).toFixed(1);
+  const hp_val = tt.getDailyConsumption().renderTokWh();
+  const hc_val = tt.getNightlyConsumption().renderTokWh();
 
   return [
     {
       icon: <BsFillLightningChargeFill />,
       label: "INSTANT. ",
       unit: "kW",
-      value: papp,
+      value: papp.renderTokW(),
       color: papp_color,
     },
     {
@@ -76,29 +74,6 @@ function createCardsProps(props: ReportProps): CardProps[] {
       color: "lightyellow",
     },
   ];
-}
-
-function getIntValue(name: string, vals: Value[]): number {
-  const ret = vals
-    .filter((val: Value) => {
-      return val.name === name;
-    })
-    .map((val: Value) => {
-      return parseInt(val.value);
-    });
-
-  if (ret.length)
-    return ret.reduce((val: number) => {
-      return val;
-    });
-
-  return 0;
-}
-
-function getValue(id: string, values: Value[]) {
-  let v = getIntValue(id, values);
-
-  return (v / 1000.0).toFixed(1);
 }
 
 function getColor(value: number): string {

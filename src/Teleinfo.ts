@@ -50,15 +50,26 @@ class Teleinfo {
   }
 
   getDailyConsumption() {
-    const hp = getIntValue("BBRHPJB", this.samples);
-    const hp_offset = getIntValue("BBRHPJB", this.zero);
-
-    return Energy.WattHour(hp - hp_offset);
+    return this.getAccuConsumption("BBRHP");
   }
 
   getNightlyConsumption() {
-    const hp = getIntValue("BBRHCJB", this.samples);
-    const hp_offset = getIntValue("BBRHCJB", this.zero);
+    return this.getAccuConsumption("BBRHC");
+  }
+
+  private getAccuConsumption(key: string) {
+    return this.samples
+      .filter((sample) => sample.name.startsWith(key))
+      .map((sample) => this.getConsumption(sample.name))
+      .reduce(
+        (prev, current) => Energy.WattHour(prev.watt_hour + current.watt_hour),
+        Energy.WattHour(0)
+      );
+  }
+
+  private getConsumption(key: string) {
+    const hp = getIntValue(key, this.samples);
+    const hp_offset = getIntValue(key, this.zero);
 
     return Energy.WattHour(hp - hp_offset);
   }

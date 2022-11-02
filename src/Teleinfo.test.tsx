@@ -84,9 +84,29 @@ const zero: Sample[] = [
     value: "18520000",
   },
   {
+    date: "2022-11-01T20:57:50Z",
+    name: "BBRHPJR",
+    value: "000000000",
+  },
+  {
+    date: "2022-11-01T20:57:50Z",
+    name: "BBRHPJW",
+    value: "000011398",
+  },
+  {
     date: "2022-11-01T10:57:50Z",
     name: "BBRHCJB",
     value: "12240000",
+  },
+  {
+    date: "2022-11-01T20:57:50Z",
+    name: "BBRHCJR",
+    value: "000000000",
+  },
+  {
+    date: "2022-11-01T20:57:50Z",
+    name: "BBRHCJW",
+    value: "000014409",
   },
 ];
 
@@ -106,6 +126,24 @@ test("calc daily consumtion", () => {
   expect(cons).toEqual(Energy.WattHour(785));
 
   expect(cons.renderTokWh()).toEqual("0.8");
+});
+
+test("calc instant power when no data", () => {
+  const tt = new Teleinfo([], []);
+
+  const pow = tt.getInstantPower();
+  expect(pow).toEqual(Power.Watt(0));
+
+  expect(pow.renderTokW()).toEqual("0.0");
+});
+
+test("calc daily consumtion when no data", () => {
+  const tt = new Teleinfo([], []);
+
+  const cons = tt.getDailyConsumption();
+  expect(cons).toEqual(Energy.WattHour(0));
+
+  expect(cons.renderTokWh()).toEqual("0.0");
 });
 
 test("calc nightly consumtion", () => {

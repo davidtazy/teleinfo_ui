@@ -48,7 +48,6 @@ import "date"
 option location = timezone.location(name: "Europe/Paris")
 from(bucket: "${bucket}")
     |> range(start: date.sub( d:2h, from:today() ) )
-    |> filter(fn: (r) => r["_measurement"] == "BBRHPJB" or r["_measurement"] == "BBRHCJB")
     |> filter(fn: (r) => r["_field"] == "value")
     |> first()`;
 
@@ -57,7 +56,6 @@ from(bucket: "${bucket}")
     option location = timezone.location(name: "Europe/Paris")
     from(bucket: "${bucket}")
     |> range(start: date.add( d:6h, to:today() ) )
-    |> filter(fn: (r) => r["_measurement"] == "BBRHPJB" or r["_measurement"] == "BBRHCJB")
     |> filter(fn: (r) => r["_field"] == "value")
     |> first()`;
   if (now.getHours() >= 22) {

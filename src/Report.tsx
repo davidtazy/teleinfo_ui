@@ -14,12 +14,14 @@ export default function Report(props: ReportProps) {
   const cards = createCardsProps(props.teleinfo);
   const card_refs = useRef(cards.map(() => createRef<HTMLDivElement>()));
 
+  const animation = [1, 0, 1, 2];
+
   // create timer to scroll to cards periodically
   const [chrono] = useChrono(5000);
   let card_id = 0;
   if (props.auto_scroll) {
     //disable autoscroll
-    card_id = chrono % cards.length;
+    card_id = animation[chrono % animation.length];
   }
   // use effect to scroll to the target section when card_id change
   useEffect(() => {
@@ -49,18 +51,18 @@ function createCardsProps(tt: Teleinfo): CardProps[] {
 
   return [
     {
-      icon: <BsFillLightningChargeFill />,
-      label: "INSTANT. ",
-      unit: "kW",
-      value: papp.renderTokW(),
-      color: papp_color,
-    },
-    {
       icon: <BsSun />,
       label: "HP. ",
       unit: "kWh",
       value: hp_val,
       color: "lightyellow",
+    },
+    {
+      icon: <BsFillLightningChargeFill />,
+      label: "INSTANT. ",
+      unit: "kW",
+      value: papp.renderTokW(),
+      color: papp_color,
     },
     {
       icon: <BsMoonStars />,

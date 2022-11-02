@@ -4,6 +4,8 @@ import RawData from "./RawData";
 import Report from "./Report";
 import { useState } from "react";
 import NavBar from "./NavBar";
+import RedPeriodNotifier from "./RedPeriod";
+import { Teleinfo } from "./Teleinfo";
 
 const bucket = "teleinfo";
 
@@ -28,14 +30,17 @@ export default function InfluxDashboard(props: InfluxProps) {
     timestamp = values[0].date;
   }
 
+  const teleinfo = new Teleinfo(values, zero);
+
   return (
     <>
+      <RedPeriodNotifier isRed={teleinfo.isRedPeriod()} />
       <NavBar
         setAutoScroll={setAutoScroll}
         auto_scroll={auto_scroll}
         timestamp={timestamp}
       />
-      <Report samples={values} zero={zero} auto_scroll={auto_scroll} />
+      <Report teleinfo={teleinfo} auto_scroll={auto_scroll} />
       <RawData values={values} offset={zero} />
     </>
   );

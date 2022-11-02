@@ -154,3 +154,45 @@ test("calc nightly consumtion", () => {
 
   expect(cons.renderTokWh()).toEqual("2.5");
 });
+
+test("not red period on Blue period", () => {
+  const tt = new Teleinfo(samples, []);
+
+  expect(tt.isRedPeriod()).toBeFalsy();
+});
+
+test("not red period when no data", () => {
+  const tt = new Teleinfo([], []);
+
+  expect(tt.isRedPeriod()).toBeFalsy();
+});
+
+test("red period on red period", () => {
+  const tt = new Teleinfo(
+    [
+      {
+        date: "2022-11-01T20:57:50Z",
+        name: "PTEC",
+        value: "HPJR",
+      },
+    ],
+    []
+  );
+
+  expect(tt.isRedPeriod()).toBeTruthy();
+});
+
+test("red period on demain not dot", () => {
+  const tt = new Teleinfo(
+    [
+      {
+        date: "2022-11-01T20:57:50Z",
+        name: "DEMAIN",
+        value: "ROU",
+      },
+    ],
+    []
+  );
+
+  expect(tt.isRedPeriod()).toBeTruthy();
+});

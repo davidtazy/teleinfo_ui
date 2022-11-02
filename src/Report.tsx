@@ -1,5 +1,4 @@
 import { createRef, useEffect, useRef } from "react";
-import { Value } from "./UseInfluxQuery";
 
 import { BsFillLightningChargeFill, BsMoonStars, BsSun } from "react-icons/bs";
 import { Card, CardProps } from "./Card";
@@ -7,13 +6,12 @@ import useChrono from "./UseChrono";
 import { Teleinfo } from "./Teleinfo";
 
 type ReportProps = {
-  samples: Value[];
-  zero: Value[];
+  teleinfo: Teleinfo;
   auto_scroll: boolean;
 };
 
 export default function Report(props: ReportProps) {
-  const cards = createCardsProps(props);
+  const cards = createCardsProps(props.teleinfo);
   const card_refs = useRef(cards.map(() => createRef<HTMLDivElement>()));
 
   // create timer to scroll to cards periodically
@@ -40,9 +38,7 @@ export default function Report(props: ReportProps) {
   );
 }
 
-function createCardsProps(props: ReportProps): CardProps[] {
-  const tt = new Teleinfo(props.samples, props.zero);
-
+function createCardsProps(tt: Teleinfo): CardProps[] {
   const papp = tt.getInstantPower();
 
   const percent = Math.min(1, papp.watts / 3000);

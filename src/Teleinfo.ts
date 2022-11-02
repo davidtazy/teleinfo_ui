@@ -57,6 +57,20 @@ class Teleinfo {
     return this.getAccuConsumption("BBRHC");
   }
 
+  isRedPeriod() {
+    const ptec = this.find("PTEC");
+    if (ptec && ptec.value.endsWith("JR")) {
+      return true;
+    }
+
+    const demain = this.find("DEMAIN");
+    if (demain && demain.value !== "----") {
+      return true;
+    }
+
+    return false;
+  }
+
   private getAccuConsumption(key: string) {
     return this.samples
       .filter((sample) => sample.name.startsWith(key))
@@ -72,6 +86,10 @@ class Teleinfo {
     const hp_offset = getIntValue(key, this.zero);
 
     return Energy.WattHour(hp - hp_offset);
+  }
+
+  private find(name: string): Sample | undefined {
+    return this.samples.find((val) => val.name === name);
   }
 }
 

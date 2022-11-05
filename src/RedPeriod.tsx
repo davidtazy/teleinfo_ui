@@ -1,7 +1,12 @@
 import useChrono from "./UseChrono";
 
 export default function RedPeriodNotifier(props: { isRed: boolean }) {
-  const [chrono] = useChrono(1000);
+  let refresh: number = 3600000;
+  if (props.isRed) {
+    refresh = 1000;
+  }
+
+  const [chrono] = useChrono(refresh);
 
   if (props.isRed && chrono % 2)
     return (

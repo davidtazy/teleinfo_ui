@@ -9,11 +9,7 @@ import { Teleinfo } from "./Teleinfo";
 
 const bucket = "teleinfo";
 
-type InfluxProps = {
-  queryApi: QueryApi;
-};
-
-export default function InfluxDashboard(props: InfluxProps) {
+export default function App(props: { queryApi: QueryApi }) {
   const [auto_scroll, setAutoScroll] = useState(true);
 
   const origin_query = getOriginQuery(new Date());

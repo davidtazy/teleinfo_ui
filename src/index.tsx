@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import { InfluxDB } from "@influxdata/influxdb-client";
 
-import InfluxDashboard from "./InfluxDashboard";
+import App from "./App";
 
 const token: string | undefined = process.env.REACT_APP_INFLUX_TOKEN;
 const org: string | undefined = process.env.REACT_APP_INFLUX_ORG;
@@ -21,7 +21,7 @@ if (token !== undefined && url !== undefined && org !== undefined) {
 
   root.render(
     <React.StrictMode>
-      <InfluxDashboard queryApi={queryApi} />
+      <App queryApi={queryApi} />
     </React.StrictMode>
   );
 } else {

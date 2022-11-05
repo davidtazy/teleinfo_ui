@@ -1,6 +1,11 @@
 import { createRef, useEffect, useRef } from "react";
 
-import { BsFillLightningChargeFill, BsMoonStars, BsSun } from "react-icons/bs";
+import {
+  BsClock,
+  BsFillLightningChargeFill,
+  BsMoonStars,
+  BsSun,
+} from "react-icons/bs";
 import { Card, CardProps } from "./Card";
 import useChrono from "./UseChrono";
 import { Teleinfo } from "./Teleinfo";
@@ -14,7 +19,7 @@ export default function Report(props: ReportProps) {
   const cards = createCardsProps(props.teleinfo);
   const card_refs = useRef(cards.map(() => createRef<HTMLDivElement>()));
 
-  const animation = [1, 0, 1, 2];
+  const animation = [1, 0, 1, 2, 3, 2];
 
   // create timer to scroll to cards periodically
   const [chrono] = useChrono(5000);
@@ -49,6 +54,9 @@ function createCardsProps(tt: Teleinfo): CardProps[] {
   const hp_val = tt.getDailyConsumption().renderTokWh();
   const hc_val = tt.getNightlyConsumption().renderTokWh();
 
+  const date = new Date();
+  const clock = `${date.getHours()}:${("0" + date.getMinutes()).slice(-2)}`;
+
   return [
     {
       icon: <BsSun />,
@@ -63,6 +71,13 @@ function createCardsProps(tt: Teleinfo): CardProps[] {
       unit: "kW",
       value: papp.renderTokW(),
       color: papp_color,
+    },
+    {
+      icon: <BsClock />,
+      label: "HC. ",
+      unit: "",
+      value: clock,
+      color: "lightgrey",
     },
     {
       icon: <BsMoonStars />,

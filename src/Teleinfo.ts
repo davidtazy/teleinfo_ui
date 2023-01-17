@@ -64,11 +64,22 @@ class Teleinfo {
     }
 
     const demain = this.find("DEMAIN");
-    if (demain && demain.value !== "----") {
-      return true;
+    if (demain === undefined) {
+      return false;
+    }
+    return demain.value.startsWith("ROUG");
+  }
+
+  isWhitePeriod() {
+    if (this.isRedPeriod()) {
+      return false;
     }
 
-    return false;
+    const demain = this.find("DEMAIN");
+    if (demain === undefined) {
+      return false;
+    }
+    return demain.value.startsWith("BLAN");
   }
 
   private getAccuConsumption(key: string) {

@@ -1,6 +1,9 @@
 import useChrono from "./UseChrono";
 
-export default function RedPeriodNotifier(props: { isRed: boolean }) {
+export default function RedPeriodNotifier(props: {
+  isRed: boolean;
+  isWhite: boolean;
+}) {
   let refresh: number = 3600000;
   if (props.isRed) {
     refresh = 1000;
@@ -8,11 +11,11 @@ export default function RedPeriodNotifier(props: { isRed: boolean }) {
 
   const [chrono] = useChrono(refresh);
 
-  if (props.isRed && chrono % 2)
+  if ((props.isRed || props.isWhite) && chrono % 2)
     return (
       <div
         style={{
-          backgroundColor: "red",
+          backgroundColor: props.isRed ? "red" : "orange",
           position: "fixed",
           top: "10px",
           right: "0px",
@@ -27,8 +30,7 @@ export default function RedPeriodNotifier(props: { isRed: boolean }) {
           textAlign: "center",
         }}
       >
-        {" "}
-        ROUGE
+        {props.isRed ? " ROUGE" : " BLANC"}
       </div>
     );
   else return <></>;

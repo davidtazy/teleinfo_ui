@@ -30,7 +30,10 @@ export default function App(props: { queryApi: QueryApi }) {
 
   return (
     <>
-      <RedPeriodNotifier isRed={teleinfo.isRedPeriod()} />
+      <RedPeriodNotifier
+        isRed={teleinfo.isRedPeriod()}
+        isWhite={teleinfo.isWhitePeriod()}
+      />
       <NavBar
         setAutoScroll={setAutoScroll}
         auto_scroll={auto_scroll}

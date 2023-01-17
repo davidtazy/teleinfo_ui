@@ -175,24 +175,47 @@ test("red period on red period", () => {
         name: "PTEC",
         value: "HPJR",
       },
-    ],
-    []
-  );
-
-  expect(tt.isRedPeriod()).toBeTruthy();
-});
-
-test("red period on demain not dot", () => {
-  const tt = new Teleinfo(
-    [
       {
         date: "2022-11-01T20:57:50Z",
         name: "DEMAIN",
-        value: "ROU",
+        value: "BLAN",
       },
     ],
     []
   );
 
   expect(tt.isRedPeriod()).toBeTruthy();
+  expect(tt.isWhitePeriod()).toBeFalsy();
+});
+
+test("red period on demain", () => {
+  const tt = new Teleinfo(
+    [
+      {
+        date: "2022-11-01T20:57:50Z",
+        name: "DEMAIN",
+        value: "ROUG",
+      },
+    ],
+    []
+  );
+
+  expect(tt.isRedPeriod()).toBeTruthy();
+  expect(tt.isWhitePeriod()).toBeFalsy();
+});
+
+test("white period on demain", () => {
+  const tt = new Teleinfo(
+    [
+      {
+        date: "2022-11-01T20:57:50Z",
+        name: "DEMAIN",
+        value: "BLAN",
+      },
+    ],
+    []
+  );
+
+  expect(tt.isRedPeriod()).toBeFalsy();
+  expect(tt.isWhitePeriod()).toBeTruthy();
 });
